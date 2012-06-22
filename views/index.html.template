@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>CDN Stats</title>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        padding: 15px;
+        font-family: sans-serif;
+      }
+      table td, table th {
+        padding: 0 10px;
+      }
+      .right {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CDN Stats</h1>
+
+    <h2>Global</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="right">Hour</th>
+          <th class="right">Reqs/sec</th>
+          <th class="right">Bytes/sec</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range $index, $el := .ByHour}}
+          <tr>
+            <td class="right">{{$index}}</td>
+            <td class="right">{{$el.Rps}} req/s</td>
+            <td class="right">{{$el.Bps}} bytes/s</td>
+          </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </body>
+</html>
