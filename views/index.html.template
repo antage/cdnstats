@@ -21,6 +21,20 @@
     <h2>Global</h2>
 
     <table>
+      <tr>
+        <td>Reqs/sec (average):</td>
+        <td class="right">{{.Summary.Rps}}</td>
+      <tr>
+      <tr>
+        <td>Bytes/sec (average):</td>
+        <td class="right">{{.Summary.Bps}}</td>
+      </tr>
+    </table>
+
+    <h3>Summary<h3>
+
+    <h3>By hours</h3>
+    <table>
       <thead>
         <tr>
           <th class="right">Hour</th>
