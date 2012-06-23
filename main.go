@@ -18,10 +18,23 @@ func collect(w http.ResponseWriter, r *http.Request) {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	t := template.Must(template.ParseFiles("views/index.html.template"))
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Printf("PANIC: %s", err)
+			w.Write([]byte("Internal error"))
+		}
+	}()
+
+	t := template.New("base")
+	funcs := template.FuncMap{"humanizeSize": humanizeSize}
+	template.Must(t.Funcs(funcs).ParseFiles("views/index.html.template"))
 
 	data := calculateComposedStats(ring)
-	t.Execute(w, data)
+	err := t.ExecuteTemplate(w, "index.html.template", data)
+	if err != nil {
+		log.Printf("TEMPLATE ERROR: %s", err)
+	}
 }
 
 func updater(source chan *http.Request) {

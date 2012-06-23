@@ -32,7 +32,7 @@
       <tr>
       <tr>
         <td>Bytes/sec (average):</td>
-        <td class="right">{{.Summary.Bps}}</td>
+        <td class="right">{{.Summary.Bps | humanizeSize}}</td>
       </tr>
     </table>
 
@@ -50,7 +50,7 @@
           <tr>
             <td class="right">{{$index}}</td>
             <td class="right">{{$el.Rps}}</td>
-            <td class="right">{{$el.Bps}}</td>
+            <td class="right">{{$el.Bps | humanizeSize}}</td>
           </tr>
         {{end}}
       </tbody>
@@ -68,7 +68,7 @@
         {{range .ByPath}}
           <tr>
             <td class="left">{{.Name}}</td>
-            <td class="right">{{.Bytes}}</td>
+            <td class="right">{{.Bytes | humanizeSize}}</td>
           </tr>
         {{end}}
       </tbody>
@@ -86,7 +86,7 @@
         {{range .ByReferer}}
           <tr>
             <td class="left">{{.Name}}</td>
-            <td class="right">{{.Bytes}}</td>
+            <td class="right">{{.Bytes | humanizeSize}}</td>
           </tr>
         {{end}}
       </tbody>
