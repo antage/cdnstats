@@ -13,12 +13,17 @@
       .right {
         text-align: right;
       }
+      .left {
+        text-align: left;
+      }
     </style>
   </head>
   <body>
     <h1>CDN Stats</h1>
 
     <h2>Global</h2>
+
+    <h3>Summary<h3>
 
     <table>
       <tr>
@@ -30,8 +35,6 @@
         <td class="right">{{.Summary.Bps}}</td>
       </tr>
     </table>
-
-    <h3>Summary<h3>
 
     <h3>By hours</h3>
     <table>
@@ -46,8 +49,44 @@
         {{range $index, $el := .ByHour}}
           <tr>
             <td class="right">{{$index}}</td>
-            <td class="right">{{$el.Rps}} req/s</td>
-            <td class="right">{{$el.Bps}} bytes/s</td>
+            <td class="right">{{$el.Rps}}</td>
+            <td class="right">{{$el.Bps}}</td>
+          </tr>
+        {{end}}
+      </tbody>
+    </table>
+
+    <h3>By path</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="left">Path</th>
+          <th class="right">Bytes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .ByPath}}
+          <tr>
+            <td class="left">{{.Name}}</td>
+            <td class="right">{{.Bytes}}</td>
+          </tr>
+        {{end}}
+      </tbody>
+    </table>
+
+    <h3>By referer<h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="left">Referer</th>
+          <th class="right">Bytes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .ByReferer}}
+          <tr>
+            <td class="left">{{.Name}}</td>
+            <td class="right">{{.Bytes}}</td>
           </tr>
         {{end}}
       </tbody>

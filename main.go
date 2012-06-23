@@ -10,18 +10,6 @@ import (
 	"strconv"
 )
 
-type stat struct {
-	requests uint64
-	Rps      uint64
-	bytes    uint64
-	Bps      uint64
-}
-
-type composedStats struct {
-	Summary stat
-	ByHour  [24]stat
-}
-
 var ring = NewStatRing()
 var rx = make(chan *http.Request, 1024)
 
@@ -32,25 +20,7 @@ func collect(w http.ResponseWriter, r *http.Request) {
 func index(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("views/index.html.template"))
 
-	var data composedStats
-	for i, s := range ring.ring {
-		if s != nil {
-			func() {
-				s.lock.RLock()
-				defer s.lock.RUnlock()
-
-				data.ByHour[i].requests = s.requests
-				data.ByHour[i].Rps = s.requests / 3600
-				data.ByHour[i].bytes = s.bytes
-				data.ByHour[i].Bps = s.bytes / 3600
-
-				data.Summary.requests += s.requests
-				data.Summary.bytes += s.bytes
-			}()
-		}
-	}
-	data.Summary.Rps = data.Summary.requests / (24 * 3600)
-	data.Summary.Bps = data.Summary.bytes / (24 * 3600)
+	data := calculateComposedStats(ring)
 	t.Execute(w, data)
 }
 
@@ -67,6 +37,25 @@ func updater(source chan *http.Request) {
 			b, err := strconv.ParseUint(r.Header.Get("X-Bytes-Sent"), 10, 64)
 			if err == nil {
 				s.bytes += b
+
+				referer := normalizeReferer(r.Header.Get("Referer"))
+				log.Printf("Normalized referer: %s [%s]", referer, r.Header.Get("Referer"))
+				if len(referer) > 0 {
+					if cb, ok := s.bytesByReferer[referer]; ok {
+						s.bytesByReferer[referer] = cb + b
+					} else {
+						s.bytesByReferer[referer] = b
+					}
+				}
+
+				path := r.FormValue("uri")
+				if len(path) > 0 {
+					if cb, ok := s.bytesByPath[path]; ok {
+						s.bytesByPath[path] = cb + b
+					} else {
+						s.bytesByPath[path] = b
+					}
+				}
 			}
 		}()
 	}
