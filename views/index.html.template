@@ -1,95 +1,115 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title>CDN Stats</title>
+    <link href="https://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
-      html, body {
-        margin: 0;
-        padding: 15px;
-        font-family: sans-serif;
+      body {
+        margin-top: 40px;
+        padding-top: 15px;
       }
-      table td, table th {
-        padding: 0 10px;
-      }
-      .right {
+      table td.right, table th.right {
         text-align: right;
       }
-      .left {
+      table td.left, table th.left {
         text-align: left;
+      }
+      #by-hours, #by-path, #by-referer {
+        padding-top: 40px;
       }
     </style>
   </head>
   <body>
-    <h1>CDN Stats</h1>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <ul class="nav">
+            <li><a href="#by-hours">Hours</a></li>
+            <li><a href="#by-path">Path</a></li>
+            <li><a href="#by-referer">Referer</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <h1>CDN Stats</h1>
 
-    <h2>Global</h2>
+          <h2>Global</h2>
 
-    <h3>Summary<h3>
+          <h3>Summary</h3>
 
-    <table>
-      <tr>
-        <td>Reqs/sec (average):</td>
-        <td class="right">{{.Summary.Rps}}</td>
-      <tr>
-      <tr>
-        <td>Bytes/sec (average):</td>
-        <td class="right">{{.Summary.Bps | humanizeSize}}</td>
-      </tr>
-    </table>
+          <table>
+            <tr>
+              <td class="right">Requests/sec (average):</td>
+              <td class="left">{{.Summary.Rps}}</td>
+            <tr>
+            <tr>
+              <td class="right">Bytes/sec (average):</td>
+              <td class="left">{{.Summary.Bps | humanizeSize}}</td>
+            </tr>
+          </table>
 
-    <h3>By hours</h3>
-    <table>
-      <thead>
-        <tr>
-          <th class="right">Hour</th>
-          <th class="right">Reqs/sec</th>
-          <th class="right">Bytes/sec</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range $index, $el := .ByHour}}
-          <tr>
-            <td class="right">{{$index}}</td>
-            <td class="right">{{$el.Rps}}</td>
-            <td class="right">{{$el.Bps | humanizeSize}}</td>
-          </tr>
-        {{end}}
-      </tbody>
-    </table>
+          <h3 id="by-hours">By hours</h3>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th class="right">Hour</th>
+                <th class="right">Reqs/sec</th>
+                <th class="right">Bytes/sec</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range $index, $el := .ByHour}}
+                <tr>
+                  <td class="right">{{$index}}</td>
+                  <td class="right">{{$el.Rps}}</td>
+                  <td class="right">{{$el.Bps | humanizeSize}}</td>
+                </tr>
+              {{end}}
+            </tbody>
+          </table>
 
-    <h3>By path</h3>
-    <table>
-      <thead>
-        <tr>
-          <th class="left">Path</th>
-          <th class="right">Bytes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .ByPath}}
-          <tr>
-            <td class="left">{{.Name}}</td>
-            <td class="right">{{.Bytes | humanizeSize}}</td>
-          </tr>
-        {{end}}
-      </tbody>
-    </table>
+          <h3 id="by-path">By path</h3>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th class="left">Path</th>
+                <th class="right">Bytes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range .ByPath}}
+                <tr>
+                  <td class="left">{{.Name}}</td>
+                  <td class="right">{{.Bytes | humanizeSize}}</td>
+                </tr>
+              {{end}}
+            </tbody>
+          </table>
 
-    <h3>By referer<h3>
-    <table>
-      <thead>
-        <tr>
-          <th class="left">Referer</th>
-          <th class="right">Bytes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .ByReferer}}
-          <tr>
-            <td class="left">{{.Name}}</td>
-            <td class="right">{{.Bytes | humanizeSize}}</td>
-          </tr>
-        {{end}}
-      </tbody>
-    </table>
+          <h3 id="by-referer">By referer</h3>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th class="left">Referer</th>
+                <th class="right">Bytes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range .ByReferer}}
+                <tr>
+                  <td class="left">{{.Name}}</td>
+                  <td class="right">{{.Bytes | humanizeSize}}</td>
+                </tr>
+              {{end}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://current.bootstrapcdn.com/bootstrap-v204/js/bootstrap.min.js"></script>
   </body>
 </html>
