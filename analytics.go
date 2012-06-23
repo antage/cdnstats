@@ -20,14 +20,16 @@ type ComposedDisplaybleStats struct {
 	ByReferer [50]namedValue
 }
 
-func extractTop(h map[string]uint64, r []namedValue) {
+func extractTop(h map[Id]uint64, mapper *NameMapper, r []namedValue) {
 	for i, _ := range r {
 		for k, b := range h {
 			if i > 0 && b >= r[i-1].Bytes {
 				continue
 			}
 			if r[i].Bytes < b {
-				r[i] = namedValue{Name: k, Bytes: b}
+				if name, ok := mapper.IdToName(k); ok {
+					r[i] = namedValue{Name: name, Bytes: b}
+				}
 			}
 		}
 	}
@@ -54,8 +56,8 @@ func calculateComposedStats(r *StatRing) *ComposedDisplaybleStats {
 	data.Summary.Rps = data.Summary.requests / (24 * 3600)
 	data.Summary.Bps = data.Summary.bytes / (24 * 3600)
 
-	summaryByPath := make(map[string]uint64, 1024)
-	summaryByReferer := make(map[string]uint64, 1024)
+	summaryByPath := make(map[Id]uint64, 1024)
+	summaryByReferer := make(map[Id]uint64, 1024)
 
 	// aggregate all data for last 24 hours
 	for _, s := range ring.ring {
@@ -83,8 +85,8 @@ func calculateComposedStats(r *StatRing) *ComposedDisplaybleStats {
 	}
 
 	// extract top values
-	extractTop(summaryByPath, data.ByPath[:])
-	extractTop(summaryByReferer, data.ByReferer[:])
+	extractTop(summaryByPath, pathMapper, data.ByPath[:])
+	extractTop(summaryByReferer, refererMapper, data.ByReferer[:])
 
 	return data
 }

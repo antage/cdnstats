@@ -13,6 +13,9 @@ import (
 var ring = NewStatRing()
 var rx = make(chan *http.Request, 1024)
 
+var pathMapper = NewNameMapper()
+var refererMapper = NewNameMapper()
+
 func collect(w http.ResponseWriter, r *http.Request) {
 	rx <- r
 }
@@ -52,20 +55,22 @@ func updater(source chan *http.Request) {
 				s.bytes += b
 
 				referer := normalizeReferer(r.Header.Get("Referer"))
+				refererId := refererMapper.NameToId(referer)
 				if len(referer) > 0 {
-					if cb, ok := s.bytesByReferer[referer]; ok {
-						s.bytesByReferer[referer] = cb + b
+					if cb, ok := s.bytesByReferer[refererId]; ok {
+						s.bytesByReferer[refererId] = cb + b
 					} else {
-						s.bytesByReferer[referer] = b
+						s.bytesByReferer[refererId] = b
 					}
 				}
 
 				path := fmt.Sprintf("%s:%s", r.FormValue("bucket"), r.FormValue("uri"))
+				pathId := pathMapper.NameToId(path)
 				if len(path) > 0 {
-					if cb, ok := s.bytesByPath[path]; ok {
-						s.bytesByPath[path] = cb + b
+					if cb, ok := s.bytesByPath[pathId]; ok {
+						s.bytesByPath[pathId] = cb + b
 					} else {
-						s.bytesByPath[path] = b
+						s.bytesByPath[pathId] = b
 					}
 				}
 			}

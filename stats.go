@@ -9,8 +9,8 @@ type Stat struct {
 	lock           sync.RWMutex
 	requests       uint64
 	bytes          uint64
-	bytesByPath    map[string]uint64
-	bytesByReferer map[string]uint64
+	bytesByPath    map[Id]uint64
+	bytesByReferer map[Id]uint64
 }
 
 type StatRing struct {
@@ -20,8 +20,8 @@ type StatRing struct {
 
 func NewStat() *Stat {
 	s := new(Stat)
-	s.bytesByPath = make(map[string]uint64, 1024)
-	s.bytesByReferer = make(map[string]uint64, 1024)
+	s.bytesByPath = make(map[Id]uint64, 1024)
+	s.bytesByReferer = make(map[Id]uint64, 1024)
 	return s
 }
 
