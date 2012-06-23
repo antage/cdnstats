@@ -52,7 +52,6 @@ func updater(source chan *http.Request) {
 				s.bytes += b
 
 				referer := normalizeReferer(r.Header.Get("Referer"))
-				log.Printf("Normalized referer: %s [%s]", referer, r.Header.Get("Referer"))
 				if len(referer) > 0 {
 					if cb, ok := s.bytesByReferer[referer]; ok {
 						s.bytesByReferer[referer] = cb + b
@@ -61,7 +60,7 @@ func updater(source chan *http.Request) {
 					}
 				}
 
-				path := r.FormValue("uri")
+				path := fmt.Sprintf("%s:%s", r.FormValue("bucket"), r.FormValue("uri"))
 				if len(path) > 0 {
 					if cb, ok := s.bytesByPath[path]; ok {
 						s.bytesByPath[path] = cb + b
