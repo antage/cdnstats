@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"html/template"
 	"strconv"
+    _ "net/http/pprof"
 )
 
 var ring = NewStatRing()
