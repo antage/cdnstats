@@ -43,6 +43,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func stats(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "path names: %d\n", pathMapper.seq.PeekId())
 	fmt.Fprintf(w, "referer names: %d\n", refererMapper.seq.PeekId())
+	fmt.Fprintf(w, "updater queue length: %d\n", len(rx))
 }
 
 var host = flag.String("h", "127.0.0.1", "host address (default 127.0.0.1)")
