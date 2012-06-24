@@ -7,8 +7,7 @@ import (
 	"net/http"
 	"runtime"
 	"html/template"
-	"strconv"
-    _ "net/http/pprof"
+	_ "net/http/pprof"
 )
 
 var ring = NewStatRing()
@@ -41,42 +40,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updater(source chan *http.Request) {
-	for r := range source {
-		func() {
-			log.Println(r)
-			s := ring.Current()
-
-			s.lock.Lock()
-			defer s.lock.Unlock()
-
-			s.requests++
-			b, err := strconv.ParseUint(r.Header.Get("X-Bytes-Sent"), 10, 64)
-			if err == nil {
-				s.bytes += b
-
-				referer := normalizeReferer(r.Header.Get("Referer"))
-				refererId := refererMapper.NameToId(referer)
-				if len(referer) > 0 {
-					if cb, ok := s.bytesByReferer[refererId]; ok {
-						s.bytesByReferer[refererId] = cb + b
-					} else {
-						s.bytesByReferer[refererId] = b
-					}
-				}
-
-				path := fmt.Sprintf("%s:%s", r.FormValue("bucket"), r.FormValue("uri"))
-				pathId := pathMapper.NameToId(path)
-				if len(path) > 0 {
-					if cb, ok := s.bytesByPath[pathId]; ok {
-						s.bytesByPath[pathId] = cb + b
-					} else {
-						s.bytesByPath[pathId] = b
-					}
-				}
-			}
-		}()
-	}
+func stats(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "path names: %d\n", pathMapper.seq.PeekId())
+	fmt.Fprintf(w, "referer names: %d\n", refererMapper.seq.PeekId())
 }
 
 var host = flag.String("h", "127.0.0.1", "host address (default 127.0.0.1)")
@@ -88,6 +54,7 @@ func main() {
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/collect", collect)
+	http.HandleFunc("/stats", stats)
 
 	http.Handle("/assets/", http.FileServer(http.Dir("assets")))
 	http.Handle("/favicon.ico", http.NotFoundHandler())

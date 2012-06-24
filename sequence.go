@@ -11,6 +11,13 @@ type Sequence struct {
 	lastId Id
 }
 
+func (s *Sequence) PeekId() (id Id) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.lastId
+}
+
 func (s *Sequence) NextId() (id Id) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
