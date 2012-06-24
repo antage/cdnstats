@@ -18,7 +18,7 @@ func normalizeReferer(r string) string {
 				result = u.Host[4:]
 			}
 		}
-		return result
+		return fmt.Sprintf("%s", result)
 	}
 	panic("unreachable")
 }
