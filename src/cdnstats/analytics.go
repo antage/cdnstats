@@ -70,18 +70,18 @@ func calculateComposedStats(r *StatRing) *ComposedDisplaybleStats {
 				s.lock.RLock()
 				defer s.lock.RUnlock()
 
-				for k, sc := range s.statByPath {
-					if ss, ok := summaryByPath[k]; ok {
-						summaryByPath[k] = Stat{ss.Bytes + sc.Bytes}
+				for _, ps := range s.PathStats {
+					if sp, ok := summaryByPath[ps.Path]; ok {
+						summaryByPath[ps.Path] = Stat{sp.Bytes + ps.Bytes}
 					} else {
-						summaryByPath[k] = sc
+						summaryByPath[ps.Path] = Stat{ps.Bytes}
 					}
 				}
-				for k, sc := range s.statByReferer {
-					if ss, ok := summaryByReferer[k]; ok {
-						summaryByReferer[k] = Stat{ss.Bytes + sc.Bytes}
+				for _, rs := range s.RefererStats {
+					if sr, ok := summaryByReferer[rs.Referer]; ok {
+						summaryByReferer[rs.Referer] = Stat{rs.Bytes + sr.Bytes}
 					} else {
-						summaryByReferer[k] = sc
+						summaryByReferer[rs.Referer] = Stat{rs.Bytes}
 					}
 				}
 			}()
