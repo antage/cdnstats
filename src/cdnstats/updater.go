@@ -1,9 +1,9 @@
 package main
 
 import (
-	"strconv"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func update(r *http.Request) {

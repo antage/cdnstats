@@ -1,8 +1,8 @@
 package string_table
 
 import (
-	"sync"
 	"sequence"
+	"sync"
 )
 
 type Id uint32

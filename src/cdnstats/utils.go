@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
-	"fmt"
 )
 
 func normalizeReferer(r string) string {

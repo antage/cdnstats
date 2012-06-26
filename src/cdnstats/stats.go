@@ -1,9 +1,9 @@
 package main
 
 import (
-	"time"
-	"sync"
 	"string_table"
+	"sync"
+	"time"
 )
 
 type Stat struct {
