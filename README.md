@@ -6,9 +6,9 @@ count, sent bytes, referer, URI path.
 ## Installation
 
 ```
-mkdir app
-GOPATH=app go get -u github.com/antage/cdnstats
-app/bin/cdnstats -h x.x.x.x -p pppp
+git clone git://github.com/antage/cdnstats
+GOPATH=./cdnstats go install cdnstats
+cdnstats/bin/cdnstats -h x.x.x.x -p pppp
 ```
 
 Where x.x.x.x is host name, pppp is port number.
@@ -34,7 +34,7 @@ server {
         proxy_send_timeout 5s;
         proxy_read_timeout 5s;
 
-        # optional header if you use domain name instead of ip-address x.x.x.x 
+        # optional header if you use domain name instead of ip-address x.x.x.x
         # proxy_set_header Host cdnstat.example.org;
 
         # this headers are used by cdnstats

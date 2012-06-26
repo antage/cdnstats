@@ -3,18 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-	"runtime"
-	"html/template"
 	_ "net/http/pprof"
+	"os"
+	"path"
+	"runtime"
 )
-
-var ring = NewStatRing()
-var rx = make(chan *http.Request, 1024)
-
-var pathMapper = NewNameMapper()
-var refererMapper = NewNameMapper()
 
 func collect(w http.ResponseWriter, r *http.Request) {
 	rx <- r
@@ -31,7 +27,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	t := template.New("base")
 	funcs := template.FuncMap{"humanizeSize": humanizeSize}
-	template.Must(t.Funcs(funcs).ParseFiles("views/index.html.template"))
+	template.Must(t.Funcs(funcs).ParseFiles("templates/index.html.template"))
 
 	data := calculateComposedStats(ring)
 	err := t.ExecuteTemplate(w, "index.html.template", data)
@@ -41,8 +37,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func stats(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "path names: %d\n", pathMapper.seq.PeekId())
-	fmt.Fprintf(w, "referer names: %d\n", refererMapper.seq.PeekId())
+	fmt.Fprintf(w, "path names: %d\n", pathTable.Len())
+	fmt.Fprintf(w, "referer names: %d\n", refererTable.Len())
 	fmt.Fprintf(w, "updater queue length: %d\n", len(rx))
 }
 
@@ -51,18 +47,23 @@ var port = flag.Int("p", 9090, "port (default 9090)")
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	err := os.Chdir(path.Join(path.Dir(os.Args[0]), ".."))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	flag.Parse()
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/collect", collect)
 	http.HandleFunc("/stats", stats)
 
-	http.Handle("/assets/", http.FileServer(http.Dir("assets")))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 
 	go updater(rx)
 
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", *host, *port), nil)
+	err = http.ListenAndServe(fmt.Sprintf("%s:%d", *host, *port), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
