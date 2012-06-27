@@ -38,3 +38,10 @@ func humanizeSize(b uint64) string {
 	}
 	return fmt.Sprintf("%d B", b)
 }
+
+func stripPrefix(s, prefix string) (r string, done bool) {
+	if strings.HasPrefix(s, prefix) {
+		return s[len(prefix):], true
+	}
+	return s, false
+}

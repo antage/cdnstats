@@ -17,6 +17,11 @@ type namedValue struct {
 }
 
 type ComposedDisplaybleStats struct {
+	Title string
+
+	Buckets []string
+	Servers []string
+
 	Summary DisplayableStat
 	ByHour  [24]DisplayableStat
 

@@ -17,7 +17,61 @@ func collect(w http.ResponseWriter, r *http.Request) {
 	rx <- r
 }
 
+func stats(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "path names: %d\n", pathTable.Len())
+	fmt.Fprintf(w, "referer names: %d\n", refererTable.Len())
+	fmt.Fprintf(w, "updater queue length: %d\n", len(rx))
+}
+
+func renderIndex(w http.ResponseWriter, rng *StatRing, title string) {
+	t := template.New("base")
+	funcs := template.FuncMap{"humanizeSize": humanizeSize}
+	template.Must(t.Funcs(funcs).ParseFiles("templates/index.html.template"))
+
+	data := calculateComposedStats(rng)
+
+	data.Title = title
+
+	data.Buckets = ringByBucket.Keys()
+	data.Servers = ringByServer.Keys()
+
+	err := t.ExecuteTemplate(w, "index.html.template", data)
+	if err != nil {
+		log.Printf("TEMPLATE ERROR: %s", err)
+	}
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Printf("PANIC: %s", err)
+			w.Write([]byte("Internal error"))
+		}
+	}()
+
+	renderIndex(w, ring, "Global")
+}
+
+func bucketIndex(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Printf("PANIC: %s", err)
+			w.Write([]byte("Internal error"))
+		}
+	}()
+
+	if bucket, ok := stripPrefix(r.URL.Path, "/bucket/"); ok {
+		if rng, ok := ringByBucket.Lookup(bucket); ok {
+			renderIndex(w, rng, fmt.Sprintf("%s bucket", bucket))
+		} else {
+			w.WriteHeader(404)
+		}
+	}
+}
+
+func serverIndex(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -30,17 +84,13 @@ func index(w http.ResponseWriter, r *http.Request) {
 	funcs := template.FuncMap{"humanizeSize": humanizeSize}
 	template.Must(t.Funcs(funcs).ParseFiles("templates/index.html.template"))
 
-	data := calculateComposedStats(ring)
-	err := t.ExecuteTemplate(w, "index.html.template", data)
-	if err != nil {
-		log.Printf("TEMPLATE ERROR: %s", err)
+	if server, ok := stripPrefix(r.URL.Path, "/server/"); ok {
+		if rng, ok := ringByServer.Lookup(server); ok {
+			renderIndex(w, rng, fmt.Sprintf("%s server", server))
+		} else {
+			w.WriteHeader(404)
+		}
 	}
-}
-
-func stats(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "path names: %d\n", pathTable.Len())
-	fmt.Fprintf(w, "referer names: %d\n", refererTable.Len())
-	fmt.Fprintf(w, "updater queue length: %d\n", len(rx))
 }
 
 var host = flag.String("h", "127.0.0.1", "host address (default 127.0.0.1)")
@@ -61,6 +111,8 @@ func main() {
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/collect", collect)
+	http.HandleFunc("/bucket/", bucketIndex)
+	http.HandleFunc("/server/", serverIndex)
 	http.HandleFunc("/stats", stats)
 
 	http.Handle("/favicon.ico", http.NotFoundHandler())

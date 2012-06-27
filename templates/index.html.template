@@ -27,6 +27,22 @@
             <li><a href="#by-hours">Hours</a></li>
             <li><a href="#by-path">Path</a></li>
             <li><a href="#by-referer">Referer</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Buckets<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                {{range .Buckets}}
+                  <li><a href="/bucket/{{.}}">{{.}}</a></li>
+                {{end}}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Servers<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                {{range .Servers}}
+                  <li><a href="/server/{{.}}">{{.}}</a></li>
+                {{end}}
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -36,7 +52,7 @@
         <div class="span12">
           <h1>CDN Stats</h1>
 
-          <h2>Global</h2>
+          <h2>{{.Title}}</h2>
 
           <h3>Summary</h3>
 

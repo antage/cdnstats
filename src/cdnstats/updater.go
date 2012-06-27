@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 )
 
-func update(r *http.Request) {
+func update(r *http.Request, ring *StatRing) {
 	s := ring.Current()
 
 	s.lock.Lock()
@@ -27,7 +26,7 @@ func update(r *http.Request) {
 			}
 		}
 
-		path := fmt.Sprintf("%s:%s", r.FormValue("bucket"), r.FormValue("uri"))
+		path := r.FormValue("uri")
 		pathId := pathTable.Store(path)
 		if len(path) > 0 {
 			if sc, ok := s.statByPath[pathId]; ok {
@@ -41,6 +40,15 @@ func update(r *http.Request) {
 
 func updater(source chan *http.Request) {
 	for r := range source {
-		update(r)
+		// update global ring
+		go update(r, ring)
+
+		// update bucket ring
+		bucket := r.FormValue("bucket")
+		go update(r, ringByBucket.LookupOrCreate(bucket))
+
+		// update server ring
+		server := r.FormValue("s")
+		go update(r, ringByServer.LookupOrCreate(server))
 	}
 }
