@@ -21,6 +21,13 @@ func New() (t *StringTable) {
 	return t
 }
 
+func NewPreallocated(size int) (t *StringTable) {
+	t = new(StringTable)
+	t.stringById = make(map[Id]string, size)
+	t.idByString = make(map[string]Id, size)
+	return t
+}
+
 func (t *StringTable) Store(s string) (id Id) {
 	t.lock.Lock()
 	defer t.lock.Unlock()

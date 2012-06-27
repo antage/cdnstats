@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"string_table"
 )
 
 func collect(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,7 @@ func stats(w http.ResponseWriter, r *http.Request) {
 
 var host = flag.String("h", "127.0.0.1", "host address (default 127.0.0.1)")
 var port = flag.Int("p", 9090, "port (default 9090)")
+var pathHashtableSize = flag.Int("phts", 1000, "path hashtable size (default 1000)")
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -54,6 +56,8 @@ func main() {
 	}
 
 	flag.Parse()
+
+	pathTable = string_table.NewPreallocated(*pathHashtableSize)
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/collect", collect)
