@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"sort"
 	"string_table"
 )
 
@@ -33,7 +34,9 @@ func renderIndex(w http.ResponseWriter, rng *StatRing, title string) {
 	data.Title = title
 
 	data.Buckets = ringByBucket.Keys()
+	sort.StringSlice(data.Buckets).Sort()
 	data.Servers = ringByServer.Keys()
+	sort.StringSlice(data.Servers).Sort()
 
 	err := t.ExecuteTemplate(w, "index.html.template", data)
 	if err != nil {
