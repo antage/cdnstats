@@ -32,8 +32,7 @@ func (r *ringByString) LookupOrCreate(s string) *StatRing {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	rng, ok := r.m[s]
-	if ok {
+	if rng, ok := r.m[s]; ok {
 		return rng
 	} else {
 		rng := NewStatRing()

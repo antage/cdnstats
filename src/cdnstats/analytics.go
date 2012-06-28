@@ -44,9 +44,9 @@ func extractTop(h map[string_table.Id]Stat, table *string_table.StringTable, r [
 	}
 }
 
-func calculateComposedStats(r *StatRing) *ComposedDisplaybleStats {
+func calculateComposedStats(rng *StatRing) *ComposedDisplaybleStats {
 	data := new(ComposedDisplaybleStats)
-	for i, s := range ring.ring {
+	for i, s := range rng.ring {
 		if s != nil {
 			func() {
 				s.lock.RLock()

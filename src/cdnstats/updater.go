@@ -5,8 +5,8 @@ import (
 	"strconv"
 )
 
-func update(r *http.Request, ring *StatRing) {
-	s := ring.Current()
+func update(r *http.Request, rng *StatRing) {
+	s := rng.Current()
 
 	s.lock.Lock()
 	defer s.lock.Unlock()
