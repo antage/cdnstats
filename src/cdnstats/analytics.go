@@ -69,7 +69,7 @@ func calculateComposedStats(rng *StatRing) *ComposedDisplaybleStats {
 	summaryByReferer := make(map[string_table.Id]Stat)
 
 	// aggregate all data for last 24 hours
-	for _, s := range ring.ring {
+	for _, s := range rng.ring {
 		if s != nil {
 			func() {
 				s.lock.RLock()
