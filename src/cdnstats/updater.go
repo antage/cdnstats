@@ -17,7 +17,12 @@ func update(r *http.Request, rng *StatRing) {
 		s.Bytes += b
 
 		referer := normalizeReferer(r.Header.Get("Referer"))
-		refererId := refererTable.Store(referer)
+
+		// copy referer to avoid memory leaks
+		refererCopy := make([]byte, len(referer))
+		copy(refererCopy, referer)
+
+		refererId := refererTable.Store(string(refererCopy))
 		if len(referer) > 0 {
 			if sc, ok := s.statByReferer[refererId]; ok {
 				s.statByReferer[refererId] = Stat{sc.Bytes + b}
@@ -27,7 +32,12 @@ func update(r *http.Request, rng *StatRing) {
 		}
 
 		path := r.FormValue("uri")
-		pathId := pathTable.Store(path)
+
+		// copy path to avoid memory leaks
+		pathCopy := make([]byte, len(path))
+		copy(pathCopy, path)
+
+		pathId := pathTable.Store(string(pathCopy))
 		if len(path) > 0 {
 			if sc, ok := s.statByPath[pathId]; ok {
 				s.statByPath[pathId] = Stat{sc.Bytes + b}
