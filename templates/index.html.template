@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>CDN Stats</title>
-    <link href="https://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap-v204/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
       body {
         margin-top: 40px;
