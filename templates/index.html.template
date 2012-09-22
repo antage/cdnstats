@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>CDN Stats</title>
-    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <style type="text/css">
       body {
         margin-top: 40px;
@@ -128,6 +128,6 @@
       </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="https://current.bootstrapcdn.com/bootstrap-v204/js/bootstrap.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
   </body>
 </html>
